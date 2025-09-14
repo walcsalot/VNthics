@@ -1,0 +1,10 @@
+﻿I'm sorry, but errors were detected in your script. Please correct the
+errors listed below, and try again.
+
+
+File "game/screens.rpy", line 298: 'with' is not a keyword argument or valid child of the vbox statement.
+    with fade
+        ^
+
+Ren'Py Version: Ren'Py 8.3.5.25020701+nightly
+Sun Sep 14 21:49:35 2025
