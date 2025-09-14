@@ -1,82 +1,42 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
 While running game code:
-Exception: Could not find font 'Verdana.ttf'.
+  File "renpy/common/00start.rpy", line 216, in script call
+    call _load_reload_game from _call__load_reload_game_1
+  File "renpy/common/00keymap.rpy", line 548, in script
+    python hide:
+  File "renpy/common/00keymap.rpy", line 548, in <module>
+    python hide:
+  File "renpy/common/00keymap.rpy", line 559, in _execute_python_hide
+    renpy.load(renpy.session["_reload_slot"])
+Exception: Couldn't find a place to stop rolling back. Perhaps the script changed in an incompatible way?
 
 -- Full Traceback ------------------------------------------------------------
 
 Full traceback:
-  File "renpy/common/_layout/screen_main_menu.rpym", line 28, in script
+  File "renpy/common/00start.rpy", line 216, in script call
+    call _load_reload_game from _call__load_reload_game_1
+  File "renpy/common/00keymap.rpy", line 548, in script
     python hide:
   File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\ast.py", line 827, in execute
     renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
   File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\python.py", line 1178, in py_exec_bytecode
     exec(bytecode, globals, locals)
-  File "renpy/common/_layout/screen_main_menu.rpym", line 28, in <module>
+  File "renpy/common/00keymap.rpy", line 548, in <module>
     python hide:
-  File "renpy/common/_layout/screen_main_menu.rpym", line 35, in _execute_python_hide
-    ui.interact()
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\ui.py", line 301, in interact
-    rv = renpy.game.interface.interact(roll_forward=roll_forward, **kwargs)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\core.py", line 2218, in interact
-    repeat, rv = self.interact_core(preloads=preloads, trans_pause=trans_pause, pause=pause, pause_start=pause_start, pause_modal=pause_modal, **kwargs) # type: ignore
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\core.py", line 2882, in interact_core
-    self.draw_screen(root_widget, fullscreen_video, (not fullscreen_video) or video_frame_drawn)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\core.py", line 1384, in draw_screen
-    surftree = renpy.display.render.render_screen(
-  File "render.pyx", line 486, in renpy.display.render.render_screen
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 900, in render
-    surf = render(child, width, height, cst, cat)
-  File "render.pyx", line 170, in renpy.display.render.render
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 900, in render
-    surf = render(child, width, height, cst, cat)
-  File "render.pyx", line 170, in renpy.display.render.render
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 900, in render
-    surf = render(child, width, height, cst, cat)
-  File "render.pyx", line 170, in renpy.display.render.render
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\screen.py", line 752, in render
-    child = renpy.display.render.render(self.child, w, h, st, at)
-  File "render.pyx", line 170, in renpy.display.render.render
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 900, in render
-    surf = render(child, width, height, cst, cat)
-  File "render.pyx", line 170, in renpy.display.render.render
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 1171, in render
-    surf = render(d, width - x, rh, cst, cat)
-  File "render.pyx", line 170, in renpy.display.render.render
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\behavior.py", line 976, in render
-    rv = super(Button, self).render(width, height, st, at)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 1409, in render
-    xminimum = max(xminimum, size_groups[size_group].width(width, height, st, at))
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 1346, in width
-    rend = renpy.display.render.render_for_size(i, width, height, st, at)
-  File "render.pyx", line 312, in renpy.display.render.render_for_size
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\behavior.py", line 976, in render
-    rv = super(Button, self).render(width, height, st, at)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\display\layout.py", line 1457, in render
-    surf = render(child,
-  File "render.pyx", line 170, in renpy.display.render.render
-  File "render.pyx", line 260, in renpy.display.render.render
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\text\text.py", line 2614, in render
-    virtual_layout = Layout(self, width, height, renders, drawable_res=False, size_only=True)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\text\text.py", line 775, in __init__
-    glyphs = ts.glyphs(s, self)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\text\text.py", line 348, in glyphs
-    fo = font.get_font(self.font, self.size, self.bold, self.italic, 0, self.antialias, self.vertical, self.hinting, layout.oversample, self.shaper, self.instance, self.axis)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\text\font.py", line 745, in get_font
-    face = load_face(fn, shaper)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\text\font.py", line 673, in load_face
-    raise Exception("Could not find font {0!r}.".format(orig_fn))
-Exception: Could not find font 'Verdana.ttf'.
+  File "renpy/common/00keymap.rpy", line 559, in _execute_python_hide
+    renpy.load(renpy.session["_reload_slot"])
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\loadsave.py", line 838, in load
+    log.unfreeze(roots, label="_after_load")
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\rollback.py", line 1135, in unfreeze
+    self.rollback(0, force=True, label=label, greedy=greedy, on_load=True)
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\rollback.py", line 930, in rollback
+    self.load_failed()
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\rollback.py", line 848, in load_failed
+    raise Exception("Couldn't find a place to stop rolling back. Perhaps the script changed in an incompatible way?")
+Exception: Couldn't find a place to stop rolling back. Perhaps the script changed in an incompatible way?
 
 Windows-10-10.0.19045 AMD64
 Ren'Py 8.3.5.25020701+nightly
 VNEthics 1.0
-Sun Sep 14 21:54:51 2025
+Sun Sep 14 22:18:06 2025

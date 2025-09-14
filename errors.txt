@@ -2,9 +2,21 @@
 errors listed below, and try again.
 
 
-File "game/screens.rpy", line 298: 'with' is not a keyword argument or valid child of the vbox statement.
-    with fade
-        ^
+File "game/screens.rpy", line 338: style property outline is not known.
+    outline (1, "#000000", 0, 0)
+           ^
+
+File "game/screens.rpy", line 398: style property outline is not known.
+    outline (2, "#000000", 0, 0)
+           ^
+
+File "game/screens.rpy", line 402: style property outline is not known.
+    outline (2, "#000000", 0, 0)
+           ^
+
+File "game/screens.rpy", line 546: 'outline' is not a keyword argument or valid child of the text statement.
+    text "Select a Scenario" size 40 xalign 0.5 outline (2, "#000000", 0, 0)
+                                                       ^
 
 Ren'Py Version: Ren'Py 8.3.5.25020701+nightly
-Sun Sep 14 21:49:35 2025
+Sun Sep 14 22:02:31 2025

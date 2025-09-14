@@ -335,6 +335,7 @@ style navigation_button:
 
 style navigation_button_text:
     properties gui.text_properties("navigation_button")
+    outlines [ (1, "#000000", 0, 0) ]
 
 
 ## Main Menu screen ############################################################
@@ -394,9 +395,11 @@ style main_menu_text:
 
 style main_menu_title:
     properties gui.text_properties("title")
+    outlines [ (2, "#000000", 0, 0) ]
 
 style main_menu_version:
     properties gui.text_properties("version")
+    outlines [ (2, "#000000", 0, 0) ]
 
 
 ## Game Menu screen ############################################################
@@ -538,16 +541,73 @@ screen scenario_selection():
 
     vbox:
         align (0.5, 0.5)
-        spacing 20
+        spacing 30
 
-        text "Select a Scenario" size 40 xalign 0.5
+        text "Select a Scenario" size 40 xalign 0.5 font "Verdana-BoldItalic.ttf" color "#ffffff" outlines [ (2, "#000000", 0, 0) ]
 
-        textbutton "Scenario 1" action Start("scenario1")
-        textbutton "Scenario 2" action Start("scenario2")
-        textbutton "Scenario 3" action Start("scenario3")
-        textbutton "Scenario 4" action Start("scenario4")
+        # Grid of scenario previews
+        grid 2 2:
+            xalign 0.5
+            yalign 0.5
+            spacing 20
 
-        textbutton "Back" action Return()
+            # Scenario 1 - Filipino Story
+            button:
+                action Start("scenario1")
+                style "scenario_preview_button"
+                
+                vbox:
+                    # Image preview
+                    add "images/scenario1_preview.jpg" xalign 0.5
+                    
+                    # Title at bottom
+                    text "Filipino Story" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+
+            # Scenario 2
+            button:
+                action Start("scenario2")
+                style "scenario_preview_button"
+                
+                vbox:
+                    add "images/scenario2_preview.jpg" xalign 0.5
+                    text "Ang Hardin ng Pagpapahalaga" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+
+            # Scenario 3
+            button:
+                action Start("scenario3")
+                style "scenario_preview_button"
+                
+                vbox:
+                    add "images/scenario3_preview.jpg" xalign 0.5
+                    text "Ang Puso ng Barangay Pag-asa" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+
+            # Scenario 4
+            button:
+                action Start("scenario4")
+                style "scenario_preview_button"
+                
+                vbox:
+                    add "images/scenario4_preview.jpg" xalign 0.5
+                    text "Ang Alay ni Althea" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+
+        # Back button
+        textbutton "Back" action Return() xalign 0.5
+
+## Style for scenario preview buttons
+style scenario_preview_button is button
+style scenario_preview_button_text is button_text
+
+style scenario_preview_button:
+    xsize 300
+    ysize 250
+    background Frame("gui/frame.png", Borders(10, 10, 10, 10))
+    hover_background Frame("gui/frame.png", Borders(10, 10, 10, 10), gui.hover_color)
+    padding (10, 10, 10, 10)
+
+style scenario_preview_button_text:
+    size 18
+    color "#ffffff"
+    outlines [ (1, "#000000", 0, 0) ]
 
 ## About screen ################################################################
 ##
