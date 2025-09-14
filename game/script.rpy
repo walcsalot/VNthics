@@ -2,7 +2,6 @@
 
 # Declare characters used by this game. The color argument colorizes the
 # name of the character.
-
 define father = Character("Ama", color="#c8ffc8")
 define mother = Character("Ina", color="#ffc8c8")
 define lola = Character("Lola Rosa", color="#ffc8ff")
@@ -45,9 +44,13 @@ default moral_score = 0
 label start:
     jump scenario1
 
-# Filipino Story
+
+# ------------------ SCENARIO 1: Filipino Story ------------------
 label scenario1:
     $ moral_score = 0
+    
+    # Autosave when starting scenario
+    $ custom_autosave_scenario_start("scenario1", "Filipino Story")
 
     scene entrance  
     with fade
@@ -78,6 +81,9 @@ label act1:
 
     show miguel at center
     miguel "Naku, alas-sais na pala ng umaga! Muntik na akong mahuli sa paggising."
+
+    # Autosave before choice
+    $ custom_autosave_choice("scenario1", 1, "Umaga na. Ano ang gagawin ni Miguel?")
 
     menu:
         "Umaga na. Ano ang gagawin ni Miguel?"
@@ -305,9 +311,7 @@ label good_ending:
     "Ang kanilang kuwento ay naging inspirasyon sa buong komunidad."
     return
 
-# ------------------ SCENARIO 2: ANG HARdIN NG PAGPAPAHALAGA ------------------
-# Ang Hardin ng Pagpapahalaga: Isang Kuwento Para sa Linggo ng Wika
-# Ang Hardin ng Pagpapahalaga: Isang Kuwento Para sa Linggo ng Wika
+# ------------------ SCENARIO 2: ANG HARDIN NG PAGPAPAHALAGA ------------------
 
 # Declare background images
 image bg classroom1 = "BG/classroom1.png"

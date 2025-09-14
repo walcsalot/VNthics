@@ -195,6 +195,34 @@ init python:
     build.documentation('*.html')
     build.documentation('*.txt')
 
+## Custom Autosave System ####################################################
+##
+## Disable default autosave and create custom autosave for educational tracking
+
+# Disable default autosave
+define config.has_autosave = False
+
+# Custom autosave functions
+init python:
+    def custom_autosave_scenario_start(scenario_id, scenario_name):
+        """Autosave when starting a new scenario"""
+        renpy.save("auto-scenario-{}-start".format(scenario_id), "Autosave: Started {}".format(scenario_name))
+        print("Autosaved: Started scenario {}".format(scenario_id))
+    
+    def custom_autosave_choice(scenario_id, choice_number, choice_text):
+        """Autosave when reaching a choice"""
+        save_name = "auto-scenario-{}-choice-{}".format(scenario_id, choice_number)
+        save_description = "Autosave: Choice {} in {}".format(choice_number, scenario_id)
+        renpy.save(save_name, save_description)
+        print("Autosaved: Choice {} in scenario {}".format(choice_number, scenario_id))
+    
+    def custom_autosave_ending(scenario_id, ending_type, moral_score):
+        """Autosave when reaching an ending"""
+        save_name = "auto-scenario-{}-ending-{}".format(scenario_id, ending_type)
+        save_description = "Autosave: {} ending (Score: {})".format(ending_type.title(), moral_score)
+        renpy.save(save_name, save_description)
+        print("Autosaved: {} ending in scenario {} with score {}".format(ending_type, scenario_id, moral_score))
+
 
 ## A Google Play license key is required to perform in-app purchases. It can be
 ## found in the Google Play developer console, under "Monetize" > "Monetization
