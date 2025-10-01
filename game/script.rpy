@@ -34,20 +34,52 @@ define kaibigan1 = Character("Kaibigan 1", color="#c8ffff")
 define kaibigan2 = Character("Kaibigan 2", color="#ffffc8")
 define barangay_captain = Character("Barangay Captain", color="#c8ffff")
 
-# Define quick_menu variable for the quick menu system
-define quick_menu = True
+# quick_menu variable is defined in screens.rpy
 
 # Initialize moral score (ONLY ONCE)
 default moral_score = 0
+default current_scenario = ""
+
+# Authentication variables
+default username = ""
+default password = ""
+default is_authenticated = False
+default login_attempts = 0
+default max_login_attempts = 100
+
+# User storage (in a real application, this would be a database)
+default registered_users = {
+    "student": {
+        "password": "vne2024",
+        "email": "student@vne.com",
+        "full_name": "Default Student",
+        "created_date": "2024-01-01"
+    }
+}
+
+# Default credentials (in a real application, these would be stored securely)
+define default_username = "student"
+define default_password = "vne2024"
 
 # The game starts here
 label start:
+    # This label is called when starting a new game
+    # Authentication is handled in the main_menu screen
     jump scenario1
 
+
+# Main menu label - redirects to scenario selection
+label main_menu:
+    # Show the main menu screen (defined in screens.rpy). This ensures the
+    # game opens at the full main menu rather than jumping directly to the
+    # scenario selection screen.
+    call screen main_menu
+    return
 
 # ------------------ SCENARIO 1: Filipino Story ------------------
 label scenario1:
     $ moral_score = 0
+    $ current_scenario = "scenario1"
     
     # Autosave when starting scenario
     $ custom_autosave_scenario_start("scenario1", "Filipino Story")
@@ -90,11 +122,13 @@ label act1:
         
         "Bumangon nang maaga at tumulong sa mga gawaing bahay":
             $ moral_score += 1
+            $ track_moral_choice("scenario1", 1, "Bumangon nang maaga at tumulong sa mga gawaing bahay", "Tumulong si Miguel sa paghahanda ng pagkain at pag-aayos ng bahay. Ikinatuwa ito ng kanyang mga magulang.", 1)
             miguel "Tutulungan ko si Nanay sa paghahanda ng almusal. Mahalaga ang pagtulong sa pamilya."
             "Tumulong si Miguel sa paghahanda ng pagkain at pag-aayos ng bahay. Ikinatuwa ito ng kanyang mga magulang."
             
         "Magpahinga pa at ipagpaliban ang pagtulong":
             $ moral_score -= 1
+            $ track_moral_choice("scenario1", 1, "Magpahinga pa at ipagpaliban ang pagtulong", "Natulog pa si Miguel at nahuli sa pagtulong sa mga gawaing bahay. Ikinagalit ito ng kanyang ama.", -1)
             miguel "Limang minuto pa... antok na antok pa ako."
             "Natulog pa si Miguel at nahuli sa pagtulong sa mga gawaing bahay. Ikinagalit ito ng kanyang ama."
 
@@ -289,7 +323,7 @@ label bad_ending:
     "Ang kawalan ng respeto, pananampalataya, and pagtutulungan ay nagpatunay na ang mga maling pagpili ay nagdudulot ng kapahamakan."
     "Nawala ang init at pagmamahalan sa kanilang tahanan."
     "Ngunit hindi pa huli ang lahat. May pag-asa pa ring magbago at magsimula muli."
-    return
+    jump main_menu
 
 label neutral_ending:
     scene home_evening
@@ -298,7 +332,7 @@ label neutral_ending:
     "Natutunan nilang magtulungan at magtiwala sa isa't isa, ngunit may mga pagkakataong nagkakaroon pa rin ng alitan."
     "Patuloy silang nagsusumikap at umaasa na sa hinaharap, mas magiging maayos ang kanilang buhay."
     "Ang kahirapan ay hindi hadlang sa pagmamahalan, ngunit nangangailangan ito ng tibay ng loob at pagtitiis."
-    return
+    jump main_menu
 
 label good_ending:
     scene lounge
@@ -309,7 +343,7 @@ label good_ending:
     "at si Ana ay nakapag-aral nang mabuti at nakatulong sa pamilya."
     "Napatunayan nilang ang tunay na kayamanan ay nasa puso't isipan, hindi sa pera o materyal na bagay."
     "Ang kanilang kuwento ay naging inspirasyon sa buong komunidad."
-    return
+    jump main_menu
 
 # ------------------ SCENARIO 2: ANG HARDIN NG PAGPAPAHALAGA ------------------
 
@@ -527,7 +561,7 @@ label sc2_ending:
         "Ang mga dahon ay hindi magkakatugma at ang puno ay mukhang hindi pinag-isipan."
         "Si Leo ay hindi nakapagbahagi ng kanyang kuwento dahil hindi niya ito natapos."
         "Nagtapos ang Linggo ng Wika na may hindi magandang karanasan para sa grupo."
-        return
+    jump main_menu
 
     label sc2_neutral:
         scene bg classroom1
@@ -535,7 +569,7 @@ label sc2_ending:
         "Ang kanilang proyekto ay naging maayos ngunit may mga kakulangan pa rin."
         "Nakapagbahagi si Leo ng kanyang kuwento ngunit kulang sa kumpyansa at sigla."
         "Natuto ang grupo ng mahahalagang aral ngunit may mga pagkakataong hindi sila nagkasundo."
-        return
+    jump main_menu
         
 # --- SCENARIO 3: ANG PUSO NG BARANGAY PAG-ASA ---
 
@@ -700,7 +734,7 @@ label scenario3:
         "Sa kabila ng kanilang mga pagsisikap, maraming aral ang hindi lubos na natutunan. Ang hardin ay naibalik, ngunit hindi kasing sigla ng dati, at ang ilang isyu sa komunidad ay nanatili. Isang paalala na ang mga pagpapahalaga ay kailangan ng patuloy na paglinang."
     
     "Ang kwento ng Barangay Pag-asa ay nagpapakita na ang tunay na yaman ay nasa puso't isipan, sa pagkakaisa, at sa pagmamahal sa kapwa."
-    return
+    jump main_menu
 
 # Ang Alay ni Althea
 label scenario4:

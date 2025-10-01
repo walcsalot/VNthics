@@ -1,42 +1,40 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
-While running game code:
-  File "renpy/common/00start.rpy", line 216, in script call
-    call _load_reload_game from _call__load_reload_game_1
-  File "renpy/common/00keymap.rpy", line 548, in script
-    python hide:
-  File "renpy/common/00keymap.rpy", line 548, in <module>
-    python hide:
-  File "renpy/common/00keymap.rpy", line 559, in _execute_python_hide
-    renpy.load(renpy.session["_reload_slot"])
-Exception: Couldn't find a place to stop rolling back. Perhaps the script changed in an incompatible way?
+After initialization, but before game start.
+  File "renpy/common/00start.rpy", line 83, in _init_language
+    renpy.change_language(language)
+  File "game/screens.rpy", line 73, in <module>
+    base_bar Frame("gui/scrollbar/vertical_[prefix_]bar.png", gui.vscrollbar_borders, tile=gui.vscrollbar_tile)
+AttributeError: 'StoreModule' object has no attribute 'vscrollbar_tile'
 
 -- Full Traceback ------------------------------------------------------------
 
 Full traceback:
-  File "renpy/common/00start.rpy", line 216, in script call
-    call _load_reload_game from _call__load_reload_game_1
-  File "renpy/common/00keymap.rpy", line 548, in script
-    python hide:
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\ast.py", line 827, in execute
-    renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\python.py", line 1178, in py_exec_bytecode
-    exec(bytecode, globals, locals)
-  File "renpy/common/00keymap.rpy", line 548, in <module>
-    python hide:
-  File "renpy/common/00keymap.rpy", line 559, in _execute_python_hide
-    renpy.load(renpy.session["_reload_slot"])
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\loadsave.py", line 838, in load
-    log.unfreeze(roots, label="_after_load")
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\rollback.py", line 1135, in unfreeze
-    self.rollback(0, force=True, label=label, greedy=greedy, on_load=True)
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\rollback.py", line 930, in rollback
-    self.load_failed()
-  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\rollback.py", line 848, in load_failed
-    raise Exception("Couldn't find a place to stop rolling back. Perhaps the script changed in an incompatible way?")
-Exception: Couldn't find a place to stop rolling back. Perhaps the script changed in an incompatible way?
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\bootstrap.py", line 359, in bootstrap
+    renpy.main.main()
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\main.py", line 652, in main
+    run(restart)
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\main.py", line 75, in run
+    renpy.translation.init_translation()
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\translation\__init__.py", line 702, in init_translation
+    renpy.store._init_language() # type: ignore
+  File "renpy/common/00start.rpy", line 83, in _init_language
+    renpy.change_language(language)
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\translation\__init__.py", line 796, in change_language
+    new_change_language(tl, language)
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\translation\__init__.py", line 748, in new_change_language
+    i.apply()
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\ast.py", line 2806, in apply
+    value = renpy.python.py_eval(expr)
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\python.py", line 1209, in py_eval
+    return py_eval_bytecode(code, globals, locals)
+  File "C:\Users\stefe\Documents\renpy-8.3.5.25020701+nightly-sdk\renpy\python.py", line 1202, in py_eval_bytecode
+    return eval(bytecode, globals, locals)
+  File "game/screens.rpy", line 73, in <module>
+    base_bar Frame("gui/scrollbar/vertical_[prefix_]bar.png", gui.vscrollbar_borders, tile=gui.vscrollbar_tile)
+AttributeError: 'StoreModule' object has no attribute 'vscrollbar_tile'
 
 Windows-10-10.0.19045 AMD64
 Ren'Py 8.3.5.25020701+nightly
 VNEthics 1.0
-Sun Sep 14 22:18:06 2025
+Sun Sep 21 14:47:08 2025

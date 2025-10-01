@@ -202,26 +202,355 @@ init python:
 # Disable default autosave
 define config.has_autosave = False
 
-# Custom autosave functions
+# Custom autosave functions with Supabase integration
 init python:
+    # Import Supabase modules
+    try:
+        from supabase_config import init_supabase
+        from supabase_auth import supabase_auth
+        from supabase_saves import supabase_saves
+        from supabase_progress import supabase_progress
+        
+        # Initialize Supabase connection
+        supabase_available = init_supabase()
+        if supabase_available:
+            print("Supabase integration loaded successfully")
+        else:
+            print("Supabase integration loaded in offline mode")
+    except Exception as e:
+        print(f"Supabase integration failed to load: {e}")
+        supabase_available = False
+    
     def custom_autosave_scenario_start(scenario_id, scenario_name):
-        """Autosave when starting a new scenario"""
+        """Autosave when starting a new scenario with Supabase tracking"""
+        # Traditional Ren'Py save
         renpy.save("auto-scenario-{}-start".format(scenario_id), "Autosave: Started {}".format(scenario_name))
         print("Autosaved: Started scenario {}".format(scenario_id))
+        
+        # Supabase progress tracking
+        if supabase_available:
+            try:
+                result = supabase_progress.track_scenario_start(scenario_id, scenario_name)
+                if result["success"]:
+                    print("Progress tracked: Started scenario {}".format(scenario_id))
+            except Exception as e:
+                print(f"Progress tracking error: {e}")
     
     def custom_autosave_choice(scenario_id, choice_number, choice_text):
-        """Autosave when reaching a choice"""
+        """Autosave when reaching a choice with Supabase tracking"""
+        # Traditional Ren'Py save
         save_name = "auto-scenario-{}-choice-{}".format(scenario_id, choice_number)
         save_description = "Autosave: Choice {} in {}".format(choice_number, scenario_id)
         renpy.save(save_name, save_description)
         print("Autosaved: Choice {} in scenario {}".format(choice_number, scenario_id))
+        
+        # Supabase progress tracking
+        if supabase_available:
+            try:
+                # Extract moral impact from choice (this would need to be passed as parameter)
+                moral_impact = 0  # Default, should be calculated based on choice
+                result = supabase_progress.track_choice(scenario_id, choice_number, choice_text, "", moral_impact)
+                if result["success"]:
+                    print("Progress tracked: Choice {} in scenario {}".format(choice_number, scenario_id))
+            except Exception as e:
+                print(f"Progress tracking error: {e}")
     
     def custom_autosave_ending(scenario_id, ending_type, moral_score):
-        """Autosave when reaching an ending"""
+        """Autosave when reaching an ending with Supabase tracking"""
+        # Traditional Ren'Py save
         save_name = "auto-scenario-{}-ending-{}".format(scenario_id, ending_type)
         save_description = "Autosave: {} ending (Score: {})".format(ending_type.title(), moral_score)
         renpy.save(save_name, save_description)
         print("Autosaved: {} ending in scenario {} with score {}".format(ending_type, scenario_id, moral_score))
+        
+        # Supabase progress tracking
+        if supabase_available:
+            try:
+                result = supabase_progress.track_scenario_end(scenario_id, ending_type, moral_score)
+                if result["success"]:
+                    print("Progress tracked: {} ending in scenario {}".format(ending_type, scenario_id))
+            except Exception as e:
+                print(f"Progress tracking error: {e}")
+    
+    def authenticate_user():
+        """Authenticate user login with Supabase integration"""
+        global username, password, is_authenticated, login_attempts, max_login_attempts, registered_users
+        
+        # Try Supabase authentication first
+        if supabase_available:
+            try:
+                result = supabase_auth.login_user(username, password)
+                if result["success"]:
+                    is_authenticated = True
+                    login_attempts = 0
+                    user_data = result.get("user", {})
+                    renpy.notify("Login successful! Welcome to VNEthics.")
+                    renpy.restart_interaction()
+                    return
+                else:
+                    renpy.notify(result["message"])
+                    username = ""
+                    password = ""
+                    login_attempts += 1
+                    if login_attempts >= max_login_attempts:
+                        renpy.notify("Too many failed attempts. Please restart the game.")
+                        renpy.quit()
+                    renpy.restart_interaction()
+                    return
+            except Exception as e:
+                print(f"Supabase login error: {e}")
+                # Fall back to local authentication
+        
+        # Fallback to local authentication
+        if username in registered_users and registered_users[username]["password"] == password:
+            is_authenticated = True
+            login_attempts = 0
+            renpy.notify("Login successful! Welcome to VNEthics.")
+            renpy.restart_interaction()
+        # Fallback to default credentials for backward compatibility
+        elif username == default_username and password == default_password:
+            is_authenticated = True
+            login_attempts = 0
+            renpy.notify("Login successful! Welcome to VNEthics.")
+            renpy.restart_interaction()
+        else:
+            login_attempts += 1
+            if login_attempts >= max_login_attempts:
+                renpy.notify("Too many failed attempts. Please restart the game.")
+                renpy.quit()
+            else:
+                renpy.notify("Invalid credentials. Please try again.")
+                username = ""
+                password = ""
+                renpy.restart_interaction()
+    
+    def logout_user():
+        """Logout user and return to login screen"""
+        global is_authenticated, username, password, login_attempts
+        
+        # Logout from Supabase if available
+        if supabase_available:
+            try:
+                supabase_auth.logout_user()
+            except Exception as e:
+                print(f"Supabase logout error: {e}")
+        
+        # Clear local session
+        is_authenticated = False
+        username = ""
+        password = ""
+        login_attempts = 0
+        renpy.notify("Logged out successfully.")
+        renpy.restart_interaction()
+    
+    def register_user():
+        """Register a new user with Supabase integration"""
+        global reg_username, reg_password, reg_confirm_password, reg_email, reg_full_name, registered_users
+        
+        # Validation checks
+        if not reg_username or len(reg_username) < 3:
+            renpy.notify("Username must be at least 3 characters long.")
+            renpy.restart_interaction()
+            return
+        
+        if not reg_password or len(reg_password) < 4:
+            renpy.notify("Password must be at least 4 characters long.")
+            renpy.restart_interaction()
+            return
+        
+        if reg_password != reg_confirm_password:
+            renpy.notify("Passwords do not match. Please try again.")
+            renpy.restart_interaction()
+            return
+        
+        if not reg_email or "@" not in reg_email:
+            renpy.notify("Please enter a valid email address.")
+            renpy.restart_interaction()
+            return
+        
+        if not reg_full_name or len(reg_full_name) < 2:
+            renpy.notify("Please enter your full name.")
+            renpy.restart_interaction()
+            return
+        
+        # Try Supabase registration first
+        if supabase_available:
+            try:
+                result = supabase_auth.register_user(reg_email, reg_password, reg_full_name, reg_username)
+                if result["success"]:
+                    # Clear registration form
+                    reg_username = ""
+                    reg_password = ""
+                    reg_confirm_password = ""
+                    reg_email = ""
+                    reg_full_name = ""
+                    
+                    renpy.notify(result["message"])
+                    renpy.restart_interaction()
+                    return
+                else:
+                    renpy.notify(result["message"])
+                    renpy.restart_interaction()
+                    return
+            except Exception as e:
+                print(f"Supabase registration error: {e}")
+                # Fall back to local registration
+        
+        # Fallback to local registration
+        if reg_username in registered_users:
+            renpy.notify("Username already exists. Please choose a different one.")
+            renpy.restart_interaction()
+            return
+        
+        # Create new user locally
+        import datetime
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        
+        registered_users[reg_username] = {
+            "password": reg_password,
+            "email": reg_email,
+            "full_name": reg_full_name,
+            "created_date": current_date
+        }
+        
+        # Clear registration form
+        reg_username = ""
+        reg_password = ""
+        reg_confirm_password = ""
+        reg_email = ""
+        reg_full_name = ""
+        
+        renpy.notify("Registration successful! You can now login with your new account.")
+        renpy.restart_interaction()
+    
+    def show_registration_screen():
+        """Show registration screen"""
+        global show_registration
+        show_registration = True
+        renpy.restart_interaction()
+
+    def hide_registration_screen():
+        """Hide registration screen and return to login"""
+        global show_registration, reg_username, reg_password, reg_confirm_password, reg_email, reg_full_name
+        show_registration = False
+        # Clear registration form
+        reg_username = ""
+        reg_password = ""
+        reg_confirm_password = ""
+        reg_email = ""
+        reg_full_name = ""
+        renpy.restart_interaction()
+
+    def clear_input_focus():
+        """Clear focus from all input fields"""
+        renpy.restart_interaction()
+
+    def focus_input(input_id):
+        """Focus on a specific input field"""
+        renpy.restart_interaction()
+    
+    # Enhanced save/load functions with Supabase integration
+    def cloud_save_game(save_name, description=""):
+        """Save game to cloud with current state"""
+        if supabase_available:
+            try:
+                # Get current game state
+                current_scenario = getattr(renpy.store, 'current_scenario', 'unknown')
+                current_moral_score = getattr(renpy.store, 'moral_score', 0)
+                
+                # Create save data
+                save_data = {
+                    "scenario": current_scenario,
+                    "moral_score": current_moral_score,
+                    "timestamp": datetime.now().isoformat()
+                }
+                
+                result = supabase_saves.save_game(
+                    save_name, 
+                    save_data, 
+                    current_scenario, 
+                    current_moral_score, 
+                    description
+                )
+                
+                if result["success"]:
+                    renpy.notify(f"Game saved to cloud: {result['message']}")
+                else:
+                    renpy.notify(f"Save failed: {result['message']}")
+                    
+            except Exception as e:
+                print(f"Cloud save error: {e}")
+                renpy.notify("Cloud save failed, saved locally instead")
+                renpy.save(save_name, description)
+        else:
+            # Fallback to local save
+            renpy.save(save_name, description)
+            renpy.notify("Game saved locally")
+    
+    def cloud_load_game(save_name):
+        """Load game from cloud"""
+        if supabase_available:
+            try:
+                result = supabase_saves.load_game(save_name)
+                if result["success"]:
+                    # Restore game state
+                    if "moral_score" in result["save_data"]:
+                        renpy.store.moral_score = result["save_data"]["moral_score"]
+                    if "scenario" in result["save_data"]:
+                        renpy.store.current_scenario = result["save_data"]["scenario"]
+                    
+                    renpy.notify(f"Game loaded from {result['source']}")
+                    return True
+                else:
+                    renpy.notify(f"Load failed: {result['message']}")
+                    return False
+                    
+            except Exception as e:
+                print(f"Cloud load error: {e}")
+                renpy.notify("Cloud load failed, trying local save")
+        
+        # Fallback to local load
+        if renpy.can_load(save_name):
+            renpy.load(save_name)
+            renpy.notify("Game loaded from local storage")
+            return True
+        else:
+            renpy.notify("Save file not found")
+            return False
+    
+    def list_cloud_saves():
+        """List all available saves (cloud and local)"""
+        if supabase_available:
+            try:
+                result = supabase_saves.list_saves()
+                if result["success"]:
+                    return result["saves"]
+            except Exception as e:
+                print(f"List saves error: {e}")
+        
+        # Fallback to local saves
+        local_saves = []
+        for i in range(1, 10):
+            if renpy.can_load(str(i)):
+                local_saves.append({
+                    "name": str(i),
+                    "description": f"Local Save {i}",
+                    "source": "local"
+                })
+        return local_saves
+    
+    def track_moral_choice(scenario_id, choice_number, choice_text, choice_result, moral_impact):
+        """Track a moral choice with proper impact"""
+        if supabase_available:
+            try:
+                result = supabase_progress.track_choice(
+                    scenario_id, choice_number, choice_text, choice_result, moral_impact
+                )
+                if result["success"]:
+                    print(f"Choice tracked: {choice_text} (impact: {moral_impact})")
+            except Exception as e:
+                print(f"Choice tracking error: {e}")
+
 
 
 ## A Google Play license key is required to perform in-app purchases. It can be

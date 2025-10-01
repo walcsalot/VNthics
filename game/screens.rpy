@@ -293,8 +293,13 @@ screen navigation():
         spacing gui.navigation_spacing
 
         if main_menu:
+            # Show logged in user info
+            if is_authenticated and username in registered_users:
+                text "Welcome, [registered_users[username]['full_name']]!" xalign 0.5 color "#000000" size 16
+            elif is_authenticated:
+                text "Welcome, [username]!" xalign 0.5 color "#000000" size 16
 
-            textbutton _("Start") action ShowMenu("scenario_selection")
+            textbutton _("Scenarios") action ShowMenu("scenario_selection")
 
         else:
 
@@ -313,6 +318,9 @@ screen navigation():
             textbutton _("Main Menu") action MainMenu()
 
         textbutton _("About") action ShowMenu("about")
+        
+        if main_menu:
+            textbutton _("Logout") action Function(logout_user)
 
         if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
 
@@ -335,9 +343,94 @@ style navigation_button:
 
 style navigation_button_text:
     properties gui.text_properties("navigation_button")
-    outlines [ (1, "#000000", 0, 0) ]
+    outlines [(1, "#000000", 0, 0)]
 
 
+## Login Screen ###############################################################
+##
+## Authentication screen that appears before the main menu
+
+screen login_screen():
+    
+    tag menu
+    
+    # Background
+    add "gui/main_menu.png"
+    
+    # Dark overlay (full-screen)
+    frame:
+        # make the frame fill the screen instead of using the sidebar style
+        xfill True
+        yfill True
+        background "#00000060"
+
+        vbox:
+            xalign 0.5
+            yalign 0.5
+            spacing 30
+            
+            # Title
+            text "VNEthics Login" size 50 xalign 0.5 font "Verdana-BoldItalic.ttf" color "#ffffff" outlines [(2, "#000000", 0, 0)]
+            
+            # Login form
+            frame:
+                xalign 0.5
+                xsize 400
+                ysize 300
+                background "#00000080"
+                padding (30, 30)
+                
+                vbox:
+                    spacing 20
+                    
+                    # Username field
+                    hbox:
+                        spacing 20
+                        text "Email:" color "#ffffff" size 18 yalign 0.5 xsize 120 xalign 0.0
+                        button:
+                            action VariableInputValue("username").Toggle()
+                            xsize 200
+                            ysize 30
+                            background "#ffffff"
+                            input:
+                                value VariableInputValue("username")
+                                xsize 200
+                                ysize 30
+                                color "#000000"
+                                size 16
+                    
+                    # Password field
+                    hbox:
+                        spacing 20
+                        text "Password:" color "#ffffff" size 18 yalign 0.5 xsize 120 xalign 0.0
+                        button:
+                            action VariableInputValue("password").Toggle()
+                            xsize 200
+                            ysize 30
+                            background "#ffffff"
+                            input:
+                                value VariableInputValue("password")
+                                xsize 200
+                                ysize 30
+                                color "#000000"
+                                size 16
+                    
+                    # Login button
+                    textbutton "Login":
+                        xalign 0.5
+                        xsize 200
+                        ysize 50
+                        text_size 24
+                        action Function(authenticate_user)
+                    
+                    # Show attempts remaining
+                    # if login_attempts > 0:
+                    #    text "Attempts remaining: [max_login_attempts - login_attempts]" xalign 0.5 color "#ff6666" size 18
+            
+            # Default credentials info
+            text "Default: student / vne2024" xalign 0.5 color "#cccccc" size 16
+
+            
 ## Main Menu screen ############################################################
 ##
 ## Used to display the main menu when Ren'Py starts.
@@ -349,26 +442,30 @@ screen main_menu():
     ## This ensures that any other menu screen is replaced.
     tag menu
 
-    add gui.main_menu_background
+    # Check if user is authenticated, if not show login screen
+    if not is_authenticated:
+        use login_screen
+    else:
+        add gui.main_menu_background
 
-    ## This empty frame darkens the main menu.
-    frame:
-        style "main_menu_frame"
+        ## This empty frame darkens the main menu.
+        frame:
+            style "main_menu_frame"
 
-    ## The use statement includes another screen inside this one. The actual
-    ## contents of the main menu are in the navigation screen.
-    use navigation
+        ## The use statement includes another screen inside this one. The actual
+        ## contents of the main menu are in the navigation screen.
+        use navigation
 
-    if gui.show_name:
+        if gui.show_name:
 
-        vbox:
-            style "main_menu_vbox"
+            vbox:
+                style "main_menu_vbox"
 
-            text "[config.name!t]":
-                style "main_menu_title"
+                text "[config.name!t]":
+                    style "main_menu_title"
 
-            text "[config.version]":
-                style "main_menu_version"
+                text "[config.version]":
+                    style "main_menu_version"
 
 
 style main_menu_frame is empty
@@ -395,11 +492,11 @@ style main_menu_text:
 
 style main_menu_title:
     properties gui.text_properties("title")
-    outlines [ (2, "#000000", 0, 0) ]
+    outlines [(2, "#000000", 0, 0)]
 
 style main_menu_version:
     properties gui.text_properties("version")
-    outlines [ (2, "#000000", 0, 0) ]
+    outlines [(2, "#000000", 0, 0)]
 
 
 ## Game Menu screen ############################################################
@@ -537,61 +634,95 @@ style return_button:
 screen scenario_selection():
     tag menu
 
-    add "gui/overlay/confirm.png"  # Optional background, replace as needed
+    # Check if user is authenticated, if not show login screen
+    if not is_authenticated:
+        use login_screen
+    else:
+        add "gui/overlay/confirm.png"  # Optional background, replace as needed
 
-    vbox:
-        align (0.5, 0.5)
-        spacing 30
+        vbox:
+            align (0.5, 0.5)
+            spacing 30
 
-        text "Select a Scenario" size 40 xalign 0.5 font "Verdana-BoldItalic.ttf" color "#ffffff" outlines [ (2, "#000000", 0, 0) ]
+            text "Select a Scenario" size 40 xalign 0.5 font "Verdana-BoldItalic.ttf" color "#ffffff" outlines [(2, "#000000", 0, 0)]
 
-        # Grid of scenario previews
-        grid 2 2:
-            xalign 0.5
-            yalign 0.5
-            spacing 20
+            # Grid of scenario previews
+            grid 2 2:
+                xalign 0.5
+                yalign 0.5
+                spacing 20
 
-            # Scenario 1 - Filipino Story
-            button:
-                action Start("scenario1")
-                style "scenario_preview_button"
-                
-                vbox:
-                    # Image preview
-                    add "images/scenario1_preview.jpg" xalign 0.5
+                # Scenario 1 - Filipino Story
+                button:
+                    action Jump("scenario1")
+                    style "scenario_preview_button"
                     
-                    # Title at bottom
-                    text "Filipino Story" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+                    vbox:
+                        # Image preview placeholder
+                        frame:
+                            xsize 200
+                            ysize 120
+                            background "#333333"
+                            xalign 0.5
+                            
+                            text "Filipino Story" xalign 0.5 yalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" size 16
+                        
+                        # Title at bottom
+                        text "Filipino Story" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
 
-            # Scenario 2
-            button:
-                action Start("scenario2")
-                style "scenario_preview_button"
-                
-                vbox:
-                    add "images/scenario2_preview.jpg" xalign 0.5
-                    text "Ang Hardin ng Pagpapahalaga" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+                # Scenario 2
+                button:
+                    action Jump("scenario2")
+                    style "scenario_preview_button"
+                    
+                    vbox:
+                        # Image preview placeholder
+                        frame:
+                            xsize 200
+                            ysize 120
+                            background "#333333"
+                            xalign 0.5
+                            
+                            text "Ang Hardin ng\nPagpapahalaga" xalign 0.5 yalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" size 14
+                        
+                        text "Ang Hardin ng Pagpapahalaga" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
 
-            # Scenario 3
-            button:
-                action Start("scenario3")
-                style "scenario_preview_button"
-                
-                vbox:
-                    add "images/scenario3_preview.jpg" xalign 0.5
-                    text "Ang Puso ng Barangay Pag-asa" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+                # Scenario 3
+                button:
+                    action Jump("scenario3")
+                    style "scenario_preview_button"
+                    
+                    vbox:
+                        # Image preview placeholder
+                        frame:
+                            xsize 200
+                            ysize 120
+                            background "#333333"
+                            xalign 0.5
+                            
+                            text "Ang Puso ng\nBarangay Pag-asa" xalign 0.5 yalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" size 14
+                        
+                        text "Ang Puso ng Barangay Pag-asa" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
 
-            # Scenario 4
-            button:
-                action Start("scenario4")
-                style "scenario_preview_button"
-                
-                vbox:
-                    add "images/scenario4_preview.jpg" xalign 0.5
-                    text "Ang Alay ni Althea" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
+                # Scenario 4
+                button:
+                    action Jump("scenario4")
+                    style "scenario_preview_button"
+                    
+                    vbox:
+                        # Image preview placeholder
+                        frame:
+                            xsize 200
+                            ysize 120
+                            background "#333333"
+                            xalign 0.5
+                            
+                            text "Ang Alay ni\nAlthea" xalign 0.5 yalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" size 16
+                        
+                        text "Ang Alay ni Althea" xalign 0.5 font "Verdana-Bold.ttf" color "#ffffff" outlines [ (1, "#000000", 0, 0) ]
 
-        # Back button
-        textbutton "Back" action Return() xalign 0.5
+            # Back button
+            textbutton "Back" action Return() xalign 0.5
 
 ## Style for scenario preview buttons
 style scenario_preview_button is button
